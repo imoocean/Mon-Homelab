@@ -1,0 +1,5 @@
+.env
+.DS_Store
+n8n_data/
+uptime_kuma_data/
+homepage_config/
