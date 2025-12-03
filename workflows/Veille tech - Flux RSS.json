@@ -1,0 +1,388 @@
+{
+  "name": "Veille tech - Flux RSS",
+  "nodes": [
+    {
+      "parameters": {
+        "url": "https://www.it-connect.fr/feed/",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1.2,
+      "position": [
+        -2256,
+        192
+      ],
+      "id": "e879f42a-911f-42da-bf73-d44ba2bd35a4",
+      "name": "RSS Read"
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "databaseId": {
+          "__rl": true,
+          "value": "votre_id_base_notion",
+          "mode": "list",
+          "cachedResultName": "Veille Tech",
+          "cachedResultUrl": "https://www.notion.so/votre_id_base_notion"
+        },
+        "title": "={{ $json.title }}",
+        "propertiesUi": {
+          "propertyValues": [
+            {
+              "key": "Lien|url",
+              "urlValue": "={{ $json.link }}"
+            },
+            {
+              "key": "Source|rich_text",
+              "textContent": "={{ $json.source }}"
+            },
+            {
+              "key": "Date|rich_text",
+              "textContent": "={{ $json.pubDate }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2.2,
+      "position": [
+        -1024,
+        368
+      ],
+      "id": "a40447cd-67b2-474d-8702-03e30e67eda2",
+      "name": "Create a database page",
+      "credentials": {
+        "notionApi": {
+          "id": "notion_credential_id",
+          "name": "Notion account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "votre_email_pro@exemple.com",
+        "subject": "=☕ Veille Tech du {{ $now.toFormat('dd/MM/yyyy') }}",
+        "message": "={{ $json.choices[0].message.content.replace(/\\n/g, '<br>') }}",
+        "options": {
+          "ccList": "votre_email_perso@exemple.com"
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        -400,
+        -16
+      ],
+      "id": "053eeb9f-4b39-49d7-96ba-fc87d954c968",
+      "name": "Send a message",
+      "webhookId": "webhook_id_placeholder",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "gmail_credential_id",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 9,
+              "triggerAtMinute": 30
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -2624,
+        368
+      ],
+      "id": "76d0065c-f61b-4642-b170-b337c9618e3b",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "url": "https://korben.info/feed",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1.2,
+      "position": [
+        -2256,
+        368
+      ],
+      "id": "db2c8f28-cb02-46e6-b3f2-c46fef35073d",
+      "name": "RSS Read1"
+    },
+    {
+      "parameters": {
+        "numberInputs": 3
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        -1664,
+        352
+      ],
+      "id": "98a2d16d-89a2-48c7-a135-98182197ab15",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "34c314fe-dff7-48d9-8376-b90586d9f0e3",
+              "name": "source",
+              "value": "IT-Connect",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -2032,
+        192
+      ],
+      "id": "bba6707f-0685-4f08-9435-2af9885347e2",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "34c314fe-dff7-48d9-8376-b90586d9f0e3",
+              "name": "source",
+              "value": "Korben",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -2032,
+        368
+      ],
+      "id": "dae103f4-97e0-4a95-946e-1a0232a251e2",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "maxItems": 20
+      },
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        -1280,
+        368
+      ],
+      "id": "8bf5c080-7323-4a8c-82d0-207921b73ccc",
+      "name": "Limit"
+    },
+    {
+      "parameters": {
+        "sortFieldsUi": {
+          "sortField": [
+            {
+              "fieldName": "isoDate",
+              "order": "descending"
+            }
+          ]
+        },
+        "options": {
+          "disableDotNotation": false
+        }
+      },
+      "type": "n8n-nodes-base.sort",
+      "typeVersion": 1,
+      "position": [
+        -1456,
+        368
+      ],
+      "id": "2ccdf5d0-20f0-4592-8a18-f6a1be82fdfc",
+      "name": "Sort"
+    },
+    {
+      "parameters": {
+        "jsCode": "// On récupère tous les articles\nconst articles = $input.all();\n\n// On prépare la liste pour l'IA\nlet listeArticles = \"\";\nfor (const item of articles) {\n  listeArticles += `- ${item.json.title} (${item.json.link})\\n`;\n}\n\n// On renvoie UN SEUL objet avec la liste complète\nreturn [{ json: { prompt_content: listeArticles } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -992,
+        16
+      ],
+      "id": "5faa6761-e6f9-4981-a7f3-62843baacc1e",
+      "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.groq.com/openai/v1/chat/completions",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{\nJSON.stringify({\n  \"model\": \"moonshotai/kimi-k2-instruct\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Tu es un expert tech. Fais un résumé synthétique en français de cette veille technologique. Ton but est de donner les grandes tendances du jour en 5 à 10 lignes max. Sois direct, pas de 'Voici le résumé'. Utilise des émojis pour rendre ça vivant.\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": $json.prompt_content\n    }\n  ]\n})\n}}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -752,
+        -32
+      ],
+      "id": "9c9f2750-ff2d-47d8-b591-3c6c3cf4a22d",
+      "name": "HTTP Request",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "header_auth_credential_id",
+          "name": "Header Auth account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "RSS Read": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "RSS Read",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "RSS Read1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RSS Read1": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Sort",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Limit": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Create a database page",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sort": {
+      "main": [
+        [
+          {
+            "node": "Limit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true
+  }
+}

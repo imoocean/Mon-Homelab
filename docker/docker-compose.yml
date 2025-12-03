@@ -1,0 +1,53 @@
+version: '3.8'
+
+services:
+  # --- Cerveau de l'automatisation ---
+  n8n:
+    image: docker.n8n.io/n8nio/n8n
+    container_name: n8n
+    restart: always
+    ports:
+      - "5678:5678"
+    environment:
+      - GENERIC_TIMEZONE=Europe/Paris
+      - TZ=Europe/Paris
+      # Stocke les fichiers temporaires sur la carte SD plutôt qu'en RAM (vital pour le Pi)
+      - N8N_DEFAULT_BINARY_DATA_MODE=filesystem
+      - WEBHOOK_URL=https://sousdomaine.domaine
+    volumes:
+      - ./n8n_data:/home/node/.n8n
+
+  # --- Supervision (Ping tes serveurs/services) ---
+  uptime-kuma:
+    image: louislam/uptime-kuma:1
+    container_name: uptime-kuma
+    restart: always
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./uptime_kuma_data:/app/data
+
+  # --- Intranet / Tableau de bord ---
+  homepage:
+    image: ghcr.io/gethomepage/homepage:latest
+    container_name: homepage
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      - HOMEPAGE_ALLOWED_HOSTS=home.${nom_de_domaine}
+    volumes:
+      # Mappe les fichiers de config vers ton dossier local
+      - ./homepage_config:/app/config
+      # Accès au socket Docker pour voir l'état des conteneurs
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
+  # --- Accès distant sécurisé (Tunnel) ---
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    container_name: cloudflared
+    restart: always
+    command: tunnel run
+    environment:
+      # C'est la SEULE chose à modifier ci-dessous
+      - TUNNEL_TOKEN=${TUNNEL_TOKEN}
