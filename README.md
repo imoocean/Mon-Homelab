@@ -24,7 +24,7 @@ Un workflow quotidien qui :
 
 1. Cloner le repo :
    ```bash 
-   git clone [https://github.com/imoocean/Mon-Homelab.git](https://github.com/imoocean/Mon-Homelab.git)
+   git clone https://github.com/imoocean/Mon-Homelab.git https://github.com/imoocean/Mon-Homelab.git
    ```
 
 2. Créer un fichier .env avec votre Token Cloudflare :
@@ -34,4 +34,5 @@ TUNNEL_TOKEN=votre_token_ici
 3. Lancer la stack :
    ```bash 
 docker compose up -d
+
    ```
