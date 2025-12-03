@@ -29,10 +29,11 @@ Un workflow quotidien qui :
 
 2. Créer un fichier .env avec votre Token Cloudflare :
    ```bash 
-TUNNEL_TOKEN=votre_token_ici
+   TUNNEL_TOKEN=votre_token_ici
    ```
 3. Lancer la stack :
    ```bash 
-docker compose up -d
+   docker compose up -d
 
    ```
+
