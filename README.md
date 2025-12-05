@@ -14,9 +14,9 @@ Mon infrastructure tourne sous Docker et comprend :
 
 ### Veille Technologique IA
 Un workflow quotidien qui :
-1. Agrège les flux RSS de plusieurs sources (IT-Connect, Korben,...).
-2. Nettoie et trie les articles.
-3. **Utilise une IA (Llama 3 / Moonshot via Groq)** pour générer un résumé synthétique.
+1. Agrège les flux RSS de plusieurs sources.
+2. Nettoie, trie et filtre les doublons.
+3. **Utilise une IA (Moonshot via Groq)** pour générer un résumé synthétique et catégorisé.
 4. Sauvegarde les liens dans **Notion** (Knowledge Base).
 5. Envoie le résumé par **Email** tous les matins à 9h30.
 
@@ -24,7 +24,7 @@ Un workflow quotidien qui :
 
 1. Cloner le repo :
    ```bash 
-   git clone https://github.com/imoocean/Mon-Homelab.git https://github.com/imoocean/Mon-Homelab.git
+   git clone [https://github.com/imoocean/Mon-Homelab.git](https://github.com/imoocean/Mon-Homelab.git)
    ```
 
 2. Créer un fichier .env avec votre Token Cloudflare :
@@ -34,6 +34,4 @@ Un workflow quotidien qui :
 3. Lancer la stack :
    ```bash 
    docker compose up -d
-
    ```
-

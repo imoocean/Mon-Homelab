@@ -20,10 +20,10 @@
         "resource": "databasePage",
         "databaseId": {
           "__rl": true,
-          "value": "votre_id_base_notion",
+          "value": "votre_database_id",
           "mode": "list",
           "cachedResultName": "Veille Tech",
-          "cachedResultUrl": "https://www.notion.so/votre_id_base_notion"
+          "cachedResultUrl": "https://www.notion.so/votre_database_id"
         },
         "title": "={{ $json.title }}",
         "propertiesUi": {
@@ -47,8 +47,8 @@
       "type": "n8n-nodes-base.notion",
       "typeVersion": 2.2,
       "position": [
-        -1024,
-        368
+        -592,
+        384
       ],
       "id": "a40447cd-67b2-474d-8702-03e30e67eda2",
       "name": "Create a database page",
@@ -236,7 +236,7 @@
         "genericAuthType": "httpHeaderAuth",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={{\nJSON.stringify({\n  \"model\": \"moonshotai/kimi-k2-instruct\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Tu es un expert tech. Fais un résumé synthétique en français de cette veille technologique. Ton but est de donner les grandes tendances du jour en 5 à 10 lignes max. Sois direct, pas de 'Voici le résumé'. Utilise des émojis pour rendre ça vivant.\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": $json.prompt_content\n    }\n  ]\n})\n}}",
+        "jsonBody": "={{\nJSON.stringify({\n  \"model\": \"moonshotai/kimi-k2-instruct\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Tu es un expert tech. Analyse cette liste d'articles et regroupe lès par thèmes (ex: 🛡️ Cybersécurité, 🐧 Linux/Dev, 🚀 Tech/Espace). Pour chaque thème, fais une liste à puces des points clés. Utilise des émojis. Sois concis.\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": $json.prompt_content\n    }\n  ]\n})\n}}",
         "options": {}
       },
       "type": "n8n-nodes-base.httpRequest",
@@ -253,6 +253,69 @@
           "name": "Header Auth account"
         }
       }
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "operation": "getAll",
+        "databaseId": {
+          "__rl": true,
+          "value": "votre_database_id",
+          "mode": "list",
+          "cachedResultName": "Veille Tech",
+          "cachedResultUrl": "https://www.notion.so/votre_database_id"
+        },
+        "limit": 100,
+        "options": {
+          "sort": {
+            "sortValue": [
+              {
+                "key": "Date|rich_text",
+                "direction": "descending"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2.2,
+      "position": [
+        -1040,
+        464
+      ],
+      "id": "4ed0f566-56e3-4e02-a98d-f0f35ee253bb",
+      "name": "Get many database pages",
+      "credentials": {
+        "notionApi": {
+          "id": "notion_credential_id",
+          "name": "Notion account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "advanced": true,
+        "mergeByFields": {
+          "values": [
+            {
+              "field1": "link",
+              "field2": "property_lien"
+            }
+          ]
+        },
+        "joinMode": "keepNonMatches",
+        "outputDataFrom": "input1",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        -800,
+        384
+      ],
+      "id": "6fd3989c-a02d-44a3-a539-2d3fb616e199",
+      "name": "Merge1"
     }
   ],
   "pinData": {},
@@ -332,12 +395,17 @@
       "main": [
         [
           {
-            "node": "Code in JavaScript1",
+            "node": "Merge1",
             "type": "main",
             "index": 0
           },
           {
-            "node": "Create a database page",
+            "node": "Get many database pages",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Code in JavaScript1",
             "type": "main",
             "index": 0
           }
@@ -376,13 +444,37 @@
           }
         ]
       ]
+    },
+    "Create a database page": {
+      "main": [
+        []
+      ]
+    },
+    "Get many database pages": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge1": {
+      "main": [
+        [
+          {
+            "node": "Create a database page",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": true,
   "settings": {
     "executionOrder": "v1"
-  },
-  "meta": {
-    "templateCredsSetupCompleted": true
   }
 }
